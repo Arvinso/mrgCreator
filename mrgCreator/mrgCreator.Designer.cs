@@ -36,8 +36,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.MergedPreviewBox = new System.Windows.Forms.PictureBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.ScenePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpritePreview)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MergedPreviewBox)).BeginInit();
             this.SuspendLayout();
             // 
             // OpenSceneImage
@@ -78,12 +81,13 @@
             // 
             // MergeAndCompress_btn
             // 
-            this.MergeAndCompress_btn.Location = new System.Drawing.Point(145, 341);
+            this.MergeAndCompress_btn.Location = new System.Drawing.Point(129, 319);
             this.MergeAndCompress_btn.Name = "MergeAndCompress_btn";
-            this.MergeAndCompress_btn.Size = new System.Drawing.Size(199, 40);
+            this.MergeAndCompress_btn.Size = new System.Drawing.Size(238, 40);
             this.MergeAndCompress_btn.TabIndex = 4;
             this.MergeAndCompress_btn.Text = "Merge and Compress";
             this.MergeAndCompress_btn.UseVisualStyleBackColor = true;
+            this.MergeAndCompress_btn.Click += new System.EventHandler(this.MergeAndCompress_btn_Click);
             // 
             // label1
             // 
@@ -105,16 +109,33 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(30, 402);
+            this.textBox1.Location = new System.Drawing.Point(15, 365);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(390, 22);
             this.textBox1.TabIndex = 7;
+            // 
+            // MergedPreviewBox
+            // 
+            this.MergedPreviewBox.Location = new System.Drawing.Point(493, 95);
+            this.MergedPreviewBox.Name = "MergedPreviewBox";
+            this.MergedPreviewBox.Size = new System.Drawing.Size(238, 218);
+            this.MergedPreviewBox.TabIndex = 8;
+            this.MergedPreviewBox.TabStop = false;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(15, 402);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(390, 22);
+            this.textBox2.TabIndex = 9;
             // 
             // mrgCreator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(500, 443);
+            this.ClientSize = new System.Drawing.Size(743, 436);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.MergedPreviewBox);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -127,6 +148,7 @@
             this.Text = "mrgCreator";
             ((System.ComponentModel.ISupportInitialize)(this.ScenePreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpritePreview)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MergedPreviewBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,6 +164,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.PictureBox MergedPreviewBox;
+        private System.Windows.Forms.TextBox textBox2;
     }
 }
 

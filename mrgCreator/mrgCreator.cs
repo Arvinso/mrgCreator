@@ -12,12 +12,18 @@ namespace mrgCreator
 {
     public partial class mrgCreator : Form
     {
-        Image Scene;
-        Image Sprite;
+        Image SceneImage;
+        Image SpriteImage;
+
+        Bitmap resultBitmap;
+
+        bool spriteSet = false;
+        bool sceneSet = false;
 
         public mrgCreator()
         {
             InitializeComponent();
+            MergeAndCompress_btn.Enabled = false;
         }
 
         public bool ThumbnailCallback()
@@ -37,11 +43,12 @@ namespace mrgCreator
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-                Scene = Image.FromStream(openFileDialog1.OpenFile());
-                SpritePreview.Image = Scene.GetThumbnailImage(ScenePreview.Width, ScenePreview.Height, myCallback, IntPtr.Zero);
+                SpriteImage = Image.FromStream(openFileDialog1.OpenFile());
+                SpritePreview.Image = SpriteImage.GetThumbnailImage(SpritePreview.Width, SpritePreview.Height, myCallback, IntPtr.Zero);
+                spriteSet = true;
+                Enable_Merge_Compress();
             }
 
-            Enable_Merge_Compress();
         }
 
         private void OpenSceneImage_Click(object sender, EventArgs e)
@@ -56,17 +63,58 @@ namespace mrgCreator
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-                Scene = Image.FromStream(openFileDialog1.OpenFile());
-                ScenePreview.Image = Scene.GetThumbnailImage(ScenePreview.Width, ScenePreview.Height, myCallback, IntPtr.Zero);               
+                SceneImage = Image.FromStream(openFileDialog1.OpenFile());
+                ScenePreview.Image = SceneImage.GetThumbnailImage(ScenePreview.Width, ScenePreview.Height, myCallback, IntPtr.Zero);
+                sceneSet = true;
+                Enable_Merge_Compress();
             }
         }
 
         private void Enable_Merge_Compress()
         {
-            textBox1.Text = "hello";
-
+            if(sceneSet == true && spriteSet == true)
+            {
+                MergeAndCompress_btn.Enabled = true;
+            }
+            textBox1.Text = "test";           
         }
 
+        private void MergeAndCompress_btn_Click(object sender, EventArgs e)
+        {            
+            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
+            Bitmap sceneBitmap = new Bitmap(SceneImage);
+            Bitmap spriteBitmap = new Bitmap(SpriteImage);
 
+            resultBitmap = sceneBitmap;
+
+            int scenemidwidth = sceneBitmap.Width / 2;
+            int scenemidtheight = sceneBitmap.Height / 2;
+
+            int Itstartx = scenemidwidth - (spriteBitmap.Width / 2);
+            int Itstarty = scenemidtheight - (spriteBitmap.Height / 2);
+                       
+            textBox1.Text = Itstartx.ToString();
+            textBox2.Text = Itstarty.ToString();
+
+            for (int x = 0; x < spriteBitmap.Width; x++)
+            {
+                for (int y = 0; y < spriteBitmap.Height; y++)
+                {                   
+                    Color spritecolor = spriteBitmap.GetPixel(x, y);
+                    
+                    if(spritecolor.G != 0)
+                    {
+                        resultBitmap.SetPixel(x + Itstartx, y + Itstarty, spritecolor);
+                    }                                
+                }
+            }
+
+    
+
+
+
+
+            MergedPreviewBox.Image = resultBitmap.GetThumbnailImage(MergedPreviewBox.Width, MergedPreviewBox.Height, myCallback, IntPtr.Zero);           
+        }
     }
 }
