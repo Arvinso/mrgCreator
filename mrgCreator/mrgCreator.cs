@@ -3,19 +3,49 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AForge.Imaging;
 
 namespace mrgCreator
 {
+    struct myYcBc
+    {        
+        //byte [,]Y ;
+        //byte [,]Cb;
+        //byte [,]Cr;
+
+        int width;
+        int height;
+
+        public YCbCr [,]ycbcrArr;
+
+        public myYcBc(int width, int height)
+        {
+            //Y = new byte[width, height];
+            //Cb = new byte[width, height];
+            //Cr = new byte[width, height];
+
+            ycbcrArr = new YCbCr[width, height];
+
+            this.width = width;
+            this.height = height;            
+        }
+        public void DisplayMyownYcbr()
+        {
+            
+        }
+    }
+
     public partial class mrgCreator : Form
     {
-        Image SceneImage;
-        Image SpriteImage;
+        System.Drawing.Image SceneImage;
+        System.Drawing.Image SpriteImage;
 
         Bitmap resultBitmap;
+
+        myYcBc MyOwnYcbcr;
 
         bool spriteSet = false;
         bool sceneSet = false;
@@ -42,8 +72,8 @@ namespace mrgCreator
 
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-                SpriteImage = Image.FromStream(openFileDialog1.OpenFile());
+                System.Drawing.Image.GetThumbnailImageAbort myCallback = new System.Drawing.Image.GetThumbnailImageAbort(ThumbnailCallback);
+                SpriteImage = System.Drawing.Image.FromStream(openFileDialog1.OpenFile());
                 SpritePreview.Image = SpriteImage.GetThumbnailImage(SpritePreview.Width, SpritePreview.Height, myCallback, IntPtr.Zero);
                 spriteSet = true;
                 Enable_Merge_Compress();
@@ -62,8 +92,8 @@ namespace mrgCreator
 
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-                SceneImage = Image.FromStream(openFileDialog1.OpenFile());
+                System.Drawing.Image.GetThumbnailImageAbort myCallback = new System.Drawing.Image.GetThumbnailImageAbort(ThumbnailCallback);
+                SceneImage = System.Drawing.Image.FromStream(openFileDialog1.OpenFile());
                 ScenePreview.Image = SceneImage.GetThumbnailImage(ScenePreview.Width, ScenePreview.Height, myCallback, IntPtr.Zero);
                 sceneSet = true;
                 Enable_Merge_Compress();
@@ -80,8 +110,8 @@ namespace mrgCreator
         }
 
         private void MergeAndCompress_btn_Click(object sender, EventArgs e)
-        {            
-            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
+        {
+            System.Drawing.Image.GetThumbnailImageAbort myCallback = new System.Drawing.Image.GetThumbnailImageAbort(ThumbnailCallback);
             Bitmap sceneBitmap = new Bitmap(SceneImage);
             Bitmap spriteBitmap = new Bitmap(SpriteImage);
 
@@ -109,12 +139,32 @@ namespace mrgCreator
                 }
             }
 
-    
-
-
-
+            CreateYcbc(resultBitmap);
 
             MergedPreviewBox.Image = resultBitmap.GetThumbnailImage(MergedPreviewBox.Width, MergedPreviewBox.Height, myCallback, IntPtr.Zero);           
+        }
+
+        private void CreateYcbc(Bitmap resultBitmap)
+        {
+            MyOwnYcbcr = new myYcBc(resultBitmap.Width, resultBitmap.Height);    
+                      
+            for (int x = 0; x < resultBitmap.Width; x++)
+            {
+                for (int y = 0; y < resultBitmap.Height; y++)
+                {
+                    Color resultcolor = resultBitmap.GetPixel(x, y);
+
+                    YCbCr ycrcb = new YCbCr();
+                    RGB rgbcolor = new RGB(resultcolor);
+
+                    ycrcb.Y = YCbCr.FromRGB(rgbcolor).Y;
+                    ycrcb.Cr = YCbCr.FromRGB(rgbcolor).Cr;
+                    ycrcb.Cb = YCbCr.FromRGB(rgbcolor).Cb;
+
+                    MyOwnYcbcr.ycbcrArr[x, y] = ycrcb;                            
+                }
+            }
+            textBox1.Text = MyOwnYcbcr.ycbcrArr[5, 5].Y.ToString();       
         }
     }
 }
