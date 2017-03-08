@@ -6,20 +6,31 @@ using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AForge.Imaging;
+//using AForge.Imaging;
 
 namespace mrgCreator
 {
+    struct Yuv
+    {
+        public double Yf;
+        public double Uf;
+        public double Vf;
+
+        public int Y;
+        public int U;
+        public int V;
+    }
+
     struct myYcBc
     {        
         //byte [,]Y ;
         //byte [,]Cb;
         //byte [,]Cr;
 
-        int width;
-        int height;
+        public int width;
+        public int height;
 
-        public YCbCr [,]ycbcrArr;
+        public Yuv [,]ycbcrArr;
 
         public myYcBc(int width, int height)
         {
@@ -27,7 +38,7 @@ namespace mrgCreator
             //Cb = new byte[width, height];
             //Cr = new byte[width, height];
 
-            ycbcrArr = new YCbCr[width, height];
+            ycbcrArr = new Yuv[width, height];
 
             this.width = width;
             this.height = height;            
@@ -105,8 +116,7 @@ namespace mrgCreator
             if(sceneSet == true && spriteSet == true)
             {
                 MergeAndCompress_btn.Enabled = true;
-            }
-            textBox1.Text = "test";           
+            }                
         }
 
         private void MergeAndCompress_btn_Click(object sender, EventArgs e)
@@ -123,8 +133,8 @@ namespace mrgCreator
             int Itstartx = scenemidwidth - (spriteBitmap.Width / 2);
             int Itstarty = scenemidtheight - (spriteBitmap.Height / 2);
                        
-            textBox1.Text = Itstartx.ToString();
-            textBox2.Text = Itstarty.ToString();
+            //textBox1.Text = Itstartx.ToString();
+            //textBox2.Text = Itstarty.ToString();
 
             for (int x = 0; x < spriteBitmap.Width; x++)
             {
@@ -139,32 +149,183 @@ namespace mrgCreator
                 }
             }
 
-            CreateYcbc(resultBitmap);
+            MergedPreviewBox.Image = resultBitmap.GetThumbnailImage(MergedPreviewBox.Width, MergedPreviewBox.Height, myCallback, IntPtr.Zero);
 
-            MergedPreviewBox.Image = resultBitmap.GetThumbnailImage(MergedPreviewBox.Width, MergedPreviewBox.Height, myCallback, IntPtr.Zero);           
-        }
 
-        private void CreateYcbc(Bitmap resultBitmap)
-        {
-            MyOwnYcbcr = new myYcBc(resultBitmap.Width, resultBitmap.Height);    
-                      
+            //convert to ycrbc
+
+            MyOwnYcbcr = new myYcBc(resultBitmap.Width, resultBitmap.Height);
+
             for (int x = 0; x < resultBitmap.Width; x++)
             {
                 for (int y = 0; y < resultBitmap.Height; y++)
                 {
                     Color resultcolor = resultBitmap.GetPixel(x, y);
 
-                    YCbCr ycrcb = new YCbCr();
-                    RGB rgbcolor = new RGB(resultcolor);
+                    Yuv ycrcb = new Yuv();
+                    //YCbCr blankvalues = new YCbCr();
+                    //RGB rgbcolor = new RGB(resultcolor);
+                    //
+                    //ycrcb.Y = YCbCr.FromRGB(rgbcolor).Y;
+                    //ycrcb.Cr = YCbCr.FromRGB(rgbcolor).Cr;
+                    //ycrcb.Cb = YCbCr.FromRGB(rgbcolor).Cb;
+                    
+                    ycrcb.Yf = (0.299 * resultcolor.R) + (0.587 * resultcolor.G) + (0.114 * resultcolor.B);
 
-                    ycrcb.Y = YCbCr.FromRGB(rgbcolor).Y;
-                    ycrcb.Cr = YCbCr.FromRGB(rgbcolor).Cr;
-                    ycrcb.Cb = YCbCr.FromRGB(rgbcolor).Cb;
+                    //4:2:0 sampling
+                    if(y % 2 == 0 && x % 2 == 0)
+                    {
+                        ycrcb.Uf = (-0.147 * resultcolor.R) + (-0.289 * resultcolor.G) + (0.436 * resultcolor.B);
+                        ycrcb.Vf = (0.615 * resultcolor.R) + (-0.515 * resultcolor.G) + (-0.100 * resultcolor.B);
+                    }
+                    else
+                    {
+                        ycrcb.Uf = 0;
+                        ycrcb.Vf = 0;
+                    }
 
-                    MyOwnYcbcr.ycbcrArr[x, y] = ycrcb;                            
+                    MyOwnYcbcr.ycbcrArr[x, y] = ycrcb;
                 }
             }
-            textBox1.Text = MyOwnYcbcr.ycbcrArr[5, 5].Y.ToString();       
+
+             for(int rows = 0; rows < 8; rows++)
+            Matrixviewer.Rows.Add();
+                        
+            //normalize values to -128 to 127 range;
+
+            for (int x = 0; x < MyOwnYcbcr.width; x++)
+            {
+                for (int y = 0; y < MyOwnYcbcr.height; y++)
+                {
+                    Yuv ycColorspaceEdit = MyOwnYcbcr.ycbcrArr[x, y];
+            
+                    ycColorspaceEdit.Y = (int)((ycColorspaceEdit.Yf) - 128);
+
+                    if (y % 2 == 0 && x % 2 == 0)
+                    {
+                        ycColorspaceEdit.U = (int)((ycColorspaceEdit.Uf) - 128);
+                        ycColorspaceEdit.V = (int)((ycColorspaceEdit.Vf) - 128);
+                    }         
+                    else
+                    {
+                        ycColorspaceEdit.U = (int)(ycColorspaceEdit.Uf);
+                        ycColorspaceEdit.V = (int)(ycColorspaceEdit.Vf);
+                    }     
+
+                    MyOwnYcbcr.ycbcrArr[x,y] = ycColorspaceEdit;                     
+                }
+            }
+
+            //DCT creation
+                       
+            double [,]DCTmatrix;
+            DCTmatrix = new double[8, 8];
+
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    if(i == 0)
+                    {
+                        DCTmatrix[i,j] = 1 / Math.Sqrt(8);
+                    }
+                    else if(i > 0)
+                    {
+                        DCTmatrix[i, j] = Math.Sqrt( (2f/8f )) *  Math.Cos((((2 * j) + 1) * i * Math.PI) / (2 * 8)) ;
+                    }
+                }
+            }
+
+            //DCT creation Transposed
+
+            double[,] DCTmatrixTransposed;
+            DCTmatrixTransposed = new double[8, 8];
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    DCTmatrixTransposed[i, j] = DCTmatrix[j, i];
+                }
+            }
+
+            
+            ////////////////////
+            
+            // 8 by 8 traversal
+
+            for (int y = 0; y < MyOwnYcbcr.height; y += 8)
+            {
+                for (int x = 0; x < MyOwnYcbcr.width; x += 8)
+                {
+
+
+                    for (int ity = y; ity < y + 8; ity++)
+                    {
+                        for (int itx = x; itx < x + 8; itx++)
+                        {
+
+
+
+                            
+                        }
+                    }
+
+
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    Matrixviewer.Rows[x].Cells[y].Value = MyOwnYcbcr.ycbcrArr[x, y].U;
+                }
+            }
+
+            //for (int itx = reference; itx < reference + 8; itx++)
+            //{
+            //    for (int ity = reference; ity < reference + 8; ity++)
+            //    {
+            //        
+            //    }
+            //}
+
+
+
+
+
+
+
+            //for (int x = 0; x < 8; x++)
+            //{                
+            //    for (int y = 0; y < 8; y++)
+            //    {
+            //        Matrixviewer.Rows[y].Cells[x].Value = MyOwnYcbcr.ycbcrArr[x, y].Y;                    
+            //    }
+            //}
+
+
+
+
+
+
+
+
         }
     }
 }

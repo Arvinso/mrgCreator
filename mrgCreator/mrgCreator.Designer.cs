@@ -38,9 +38,19 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MergedPreviewBox = new System.Windows.Forms.PictureBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.Matrixviewer = new System.Windows.Forms.DataGridView();
+            this.Column0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ScenePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpritePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MergedPreviewBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Matrixviewer)).BeginInit();
             this.SuspendLayout();
             // 
             // OpenSceneImage
@@ -129,11 +139,78 @@
             this.textBox2.Size = new System.Drawing.Size(390, 22);
             this.textBox2.TabIndex = 9;
             // 
+            // Matrixviewer
+            // 
+            this.Matrixviewer.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.Matrixviewer.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column0,
+            this.Column1,
+            this.Column2,
+            this.Column3,
+            this.Column4,
+            this.Column5,
+            this.Column6,
+            this.Column7});
+            this.Matrixviewer.Location = new System.Drawing.Point(751, 95);
+            this.Matrixviewer.Name = "Matrixviewer";
+            this.Matrixviewer.RowTemplate.Height = 24;
+            this.Matrixviewer.Size = new System.Drawing.Size(532, 334);
+            this.Matrixviewer.TabIndex = 74;
+            // 
+            // Column0
+            // 
+            this.Column0.HeaderText = "Col0";
+            this.Column0.Name = "Column0";
+            this.Column0.Width = 50;
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Col1";
+            this.Column1.Name = "Column1";
+            this.Column1.Width = 50;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Col2";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 50;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Col3";
+            this.Column3.Name = "Column3";
+            this.Column3.Width = 50;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Col4";
+            this.Column4.Name = "Column4";
+            this.Column4.Width = 50;
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Col5";
+            this.Column5.Name = "Column5";
+            this.Column5.Width = 50;
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "Col6";
+            this.Column6.Name = "Column6";
+            this.Column6.Width = 50;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "Col7";
+            this.Column7.Name = "Column7";
+            this.Column7.Width = 50;
+            // 
             // mrgCreator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(743, 436);
+            this.ClientSize = new System.Drawing.Size(1295, 441);
+            this.Controls.Add(this.Matrixviewer);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.MergedPreviewBox);
             this.Controls.Add(this.textBox1);
@@ -149,6 +226,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ScenePreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpritePreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MergedPreviewBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Matrixviewer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,6 +244,15 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.PictureBox MergedPreviewBox;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.DataGridView Matrixviewer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column0;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
     }
 }
 
